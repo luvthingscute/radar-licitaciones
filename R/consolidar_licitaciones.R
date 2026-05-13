@@ -1,4 +1,6 @@
 consolidar_licitaciones <- function(use_cache = FALSE, cache_path = "data/licitaciones_cache.rds") {
+  dir.create(dirname(cache_path), showWarnings = FALSE, recursive = TRUE)
+
   if (use_cache && file.exists(cache_path)) {
     return(readRDS(cache_path))
   }

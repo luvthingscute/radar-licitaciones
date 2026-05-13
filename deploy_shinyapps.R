@@ -16,5 +16,12 @@ rsconnect::deployApp(
   appDir = ".",
   appName = "monitor-licitaciones-internacionales",
   appTitle = "Monitor de Licitaciones Internacionales",
+  appFiles = c(
+    "app.R",
+    "global.R",
+    list.files("R", pattern = "\\.R$", full.names = TRUE),
+    list.files("www", full.names = TRUE),
+    "README.md"
+  ),
   forceUpdate = TRUE
 )
