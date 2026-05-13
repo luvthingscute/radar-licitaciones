@@ -7,8 +7,8 @@ theme <- bslib::bs_theme(
   secondary = "#475569",
   success = "#059669",
   danger = "#dc2626",
-  base_font = bslib::font_google("Work Sans"),
-  heading_font = bslib::font_google("Work Sans")
+  base_font = bslib::font_google("Work Sans", local = FALSE),
+  heading_font = bslib::font_google("Work Sans", local = FALSE)
 )
 
 ui <- bslib::page_sidebar(
@@ -70,7 +70,15 @@ server <- function(input, output, session) {
   licitaciones <- reactiveVal(consolidar_licitaciones(use_cache = TRUE))
 
   observeEvent(input$refresh, {
-    licitaciones(consolidar_licitaciones(use_cache = FALSE))
+    showNotification("Actualizando fuentes en vivo. Puede tardar unos minutos.", type = "message", duration = 6)
+    datos <- withProgress(message = "Actualizando licitaciones", value = 0.1, {
+      incProgress(0.2, detail = "Consultando fuentes externas")
+      nuevos_datos <- consolidar_licitaciones(use_cache = FALSE)
+      incProgress(0.7, detail = "Actualizando dashboard")
+      nuevos_datos
+    })
+    licitaciones(datos)
+    showNotification("Datos actualizados.", type = "message", duration = 5)
   })
 
   observe({
@@ -127,7 +135,7 @@ server <- function(input, output, session) {
     }
 
     paste0(
-      "Datos cargados: ", format(nrow(df), big.mark = "."),
+      "Datos cargados: ", format(nrow(df), big.mark = ".", decimal.mark = ","),
       " registros | Fuentes con datos: ", paste(sort(unique(df$fuente)), collapse = ", "),
       " | Ultima extraccion: ", format(max(df$fecha_extraccion, na.rm = TRUE), "%Y-%m-%d %H:%M")
     )
