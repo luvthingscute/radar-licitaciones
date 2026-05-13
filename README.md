@@ -16,7 +16,6 @@ licitaciones_dashboard/
 │   ├── get_worldbank.R
 │   ├── get_bid.R
 │   ├── get_cepal.R
-│   ├── get_caf.R
 │   ├── get_google_search.R
 │   ├── consolidar_licitaciones.R
 │   ├── clasificar_tematica.R
@@ -75,17 +74,18 @@ La consulta se puede ajustar con `GOOGLE_SEARCH_QUERY`. Todos los registros qued
 
 ## Fuentes internacionales
 
-Los conectores de PNUD, UNGM y World Bank estan encapsulados. En esta primera version:
+Los conectores de PNUD, UNGM y World Bank estan encapsulados. En esta version:
 
 - `get_pnud()` intenta leer el portal publico y vuelve a datos demo si el HTML cambia.
-- `get_ungm()` queda como placeholder funcional porque UNGM depende de busqueda web y endpoints internos no garantizados.
-- `get_worldbank()` queda como placeholder funcional hasta definir el endpoint oficial mas adecuado.
+- `get_ungm()` lee el endpoint AJAX publico del buscador de UNGM.
+- `get_worldbank()` lee la API publica de avisos de adquisiciones del World Bank.
 
-## BID, CEPAL y CAF
+## BID y CEPAL
 
-- `get_bid()` queda integrado como conector del motor. BID publica las oportunidades por la app BID for the Americas; si se obtiene un endpoint exportable/documentado, se conecta ahi.
+- `get_bid()` extrae oportunidades reales desde el endpoint publico usado por BID for the Americas.
 - `get_cepal()` extrae oportunidades reales desde paginas oficiales de Expresiones de Interes y Solicitudes de Informacion.
-- `get_caf()` intenta leer Convocatorias y Licitaciones oficiales; si el sitio bloquea scraping automatico, devuelve cero filas sin inventar datos.
+
+CAF fue retirado del motor activo porque el sitio bloquea scraping automatico con Incapsula desde esta red.
 
 El dashboard sigue funcionando aunque una fuente falle gracias a `tryCatch()` en `consolidar_licitaciones()`.
 

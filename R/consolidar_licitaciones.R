@@ -11,8 +11,7 @@ consolidar_licitaciones <- function(use_cache = FALSE, cache_path = "data/licita
     safe_source(get_ungm(), "UNGM"),
     safe_source(get_worldbank(), "World Bank Procurement"),
     safe_source(get_bid(), "BID"),
-    safe_source(get_cepal(), "CEPAL"),
-    safe_source(get_caf(), "CAF")
+    safe_source(get_cepal(), "CEPAL")
   ) |>
     standardize_licitaciones() |>
     dplyr::mutate(
@@ -29,11 +28,13 @@ consolidar_licitaciones <- function(use_cache = FALSE, cache_path = "data/licita
       tematica = clasificar_tematica(titulo, descripcion),
       tipo_postulante = clasificar_postulante(titulo, descripcion)
     ) |>
+    improve_amounts() |>
     ensure_links() |>
+    dplyr::filter(fuente %in% ALL_SOURCES) |>
     dplyr::distinct(fuente, id, titulo, fecha_cierre, .keep_all = TRUE)
 
   if (nrow(old_cache)) {
-    missing_sources <- setdiff(unique(old_cache$fuente), unique(datos$fuente))
+    missing_sources <- intersect(setdiff(unique(old_cache$fuente), unique(datos$fuente)), ALL_SOURCES)
     if (length(missing_sources)) {
       message(
         "Se conservan fuentes del cache anterior porque fallaron en esta extraccion: ",

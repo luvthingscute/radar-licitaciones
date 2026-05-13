@@ -172,7 +172,14 @@ server <- function(input, output, session) {
         organismo,
         pais,
         fecha_cierre,
-        monto = dplyr::if_else(is.na(monto), NA_character_, paste(moneda, format(round(monto, 0), big.mark = ".", decimal.mark = ","))),
+        monto = dplyr::if_else(
+          is.na(monto),
+          NA_character_,
+          stringr::str_squish(paste(
+            dplyr::coalesce(moneda, ""),
+            format(round(monto, 0), big.mark = ".", decimal.mark = ",")
+          ))
+        ),
         tematica,
         tipo_postulante,
         portal = sprintf('<a href="%s" target="_blank" rel="noopener noreferrer">Portal</a>', source_portal_url(fuente)),
