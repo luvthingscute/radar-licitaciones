@@ -12,16 +12,22 @@ if (!requireNamespace("rsconnect", quietly = TRUE)) {
 #   secret = "TU_SECRET"
 # )
 
+app_files <- c(
+  "app.R",
+  "global.R",
+  list.files("R", pattern = "\\.R$", full.names = TRUE),
+  list.files("www", full.names = TRUE),
+  "README.md",
+  "data/licitaciones_cache.rds",
+  "data/mercado_publico_cache.rds"
+)
+
+app_files <- app_files[file.exists(app_files)]
+
 rsconnect::deployApp(
   appDir = ".",
   appName = "monitor-licitaciones-internacionales",
   appTitle = "Monitor de Licitaciones Internacionales",
-  appFiles = c(
-    "app.R",
-    "global.R",
-    list.files("R", pattern = "\\.R$", full.names = TRUE),
-    list.files("www", full.names = TRUE),
-    "README.md"
-  ),
+  appFiles = app_files,
   forceUpdate = TRUE
 )
