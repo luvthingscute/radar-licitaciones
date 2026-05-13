@@ -1,0 +1,10 @@
+data/*.rds
+data/*.log
+data/*.html
+data/*.js
+.git/
+.gitignore
+.Rhistory
+.RData
+.Ruserdata
+.Renviron
