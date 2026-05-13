@@ -48,6 +48,10 @@ ui <- bslib::page_sidebar(
         DT::DTOutput("tabla")
       ),
       bslib::nav_panel(
+        "Fuentes",
+        DT::DTOutput("tabla_fuentes")
+      ),
+      bslib::nav_panel(
         "Visualizaciones",
         div(
           class = "chart-grid",
@@ -71,7 +75,7 @@ server <- function(input, output, session) {
 
   observe({
     df <- licitaciones()
-    updateSelectizeInput(session, "fuente", choices = sort(unique(na.omit(df$fuente))), server = TRUE)
+    updateSelectizeInput(session, "fuente", choices = sort(unique(c(ALL_SOURCES, na.omit(df$fuente)))), server = TRUE)
     updateSelectizeInput(session, "pais", choices = sort(unique(na.omit(df$pais))), server = TRUE)
     updateSelectizeInput(session, "tematica", choices = sort(unique(na.omit(df$tematica))), server = TRUE)
     updateSelectizeInput(session, "postulante", choices = sort(unique(na.omit(df$tipo_postulante))), server = TRUE)
@@ -113,7 +117,7 @@ server <- function(input, output, session) {
   output$kpi_total <- renderUI(kpi_card("Total licitaciones", nrow(filtradas())))
   output$kpi_activas <- renderUI(kpi_card("Activas", sum(filtradas()$estado == "activa", na.rm = TRUE), "green"))
   output$kpi_proximas <- renderUI(kpi_card("Cierres < 7 dias", sum(filtradas()$dias_restantes >= 0 & filtradas()$dias_restantes < 7, na.rm = TRUE), "amber"))
-  output$kpi_fuentes <- renderUI(kpi_card("Fuentes integradas", dplyr::n_distinct(filtradas()$fuente)))
+  output$kpi_fuentes <- renderUI(kpi_card("Fuentes monitoreadas", length(ALL_SOURCES)))
   output$kpi_paises <- renderUI(kpi_card("Paises", dplyr::n_distinct(filtradas()$pais, na.rm = TRUE)))
 
   output$estado_datos <- renderText({
@@ -124,10 +128,41 @@ server <- function(input, output, session) {
 
     paste0(
       "Datos cargados: ", format(nrow(df), big.mark = "."),
-      " registros | Fuentes: ", paste(sort(unique(df$fuente)), collapse = ", "),
+      " registros | Fuentes con datos: ", paste(sort(unique(df$fuente)), collapse = ", "),
       " | Ultima extraccion: ", format(max(df$fecha_extraccion, na.rm = TRUE), "%Y-%m-%d %H:%M")
     )
   })
+
+  output$tabla_fuentes <- DT::renderDT({
+    conteos <- licitaciones() |>
+      dplyr::count(fuente, name = "registros")
+
+    df <- SOURCE_REGISTRY |>
+      dplyr::left_join(conteos, by = "fuente") |>
+      dplyr::mutate(
+        registros = dplyr::coalesce(registros, 0L),
+        estado = dplyr::if_else(registros > 0, "Con datos", "Sin registros extraidos"),
+        portal = sprintf('<a href="%s" target="_blank" rel="noopener noreferrer">Abrir portal</a>', portal)
+      ) |>
+      dplyr::select(fuente, estado, registros, modo, nota, portal)
+
+    DT::datatable(
+      df,
+      escape = FALSE,
+      rownames = FALSE,
+      options = list(
+        pageLength = 10,
+        dom = "tip",
+        scrollX = TRUE,
+        language = list(
+          info = "Mostrando _START_ a _END_ de _TOTAL_ fuentes",
+          zeroRecords = "No se encontraron fuentes",
+          emptyTable = "No hay fuentes configuradas",
+          paginate = list(previous = "Anterior", `next` = "Siguiente")
+        )
+      )
+    )
+  }, server = FALSE)
 
   output$tabla <- DT::renderDT({
     df <- filtradas() |>

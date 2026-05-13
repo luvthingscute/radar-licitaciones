@@ -5,6 +5,47 @@ STANDARD_COLUMNS <- c(
   "estado", "idioma", "fecha_extraccion"
 )
 
+SOURCE_REGISTRY <- tibble::tibble(
+  fuente = c(
+    "Mercado Publico",
+    "PNUD / UNDP",
+    "UNGM",
+    "World Bank Procurement",
+    "BID",
+    "CEPAL",
+    "CAF"
+  ),
+  portal = c(
+    "https://www.mercadopublico.cl/Home/BusquedaLicitacion",
+    "https://procurement-notices.undp.org/search.cfm",
+    "https://www.ungm.org/Public/Notice",
+    "https://www.worldbank.org/en/projects-operations/procurement",
+    "https://bidfortheamericas.connectamericas.com/",
+    "https://www.cepal.org/es/acerca/adquisiciones",
+    "https://www.caf.com/es/trabaja-con-nosotros/convocatorias/"
+  ),
+  modo = c(
+    "API",
+    "Scraping HTML",
+    "Endpoint AJAX publico",
+    "API",
+    "Conector preparado",
+    "Scraping HTML",
+    "Conector preparado"
+  ),
+  nota = c(
+    "API oficial ChileCompra con ticket publico o MERCADO_PUBLICO_TICKET.",
+    "Portal publico de Procurement Notices.",
+    "Busqueda publica de Procurement Opportunities.",
+    "API publica de Procurement Notices.",
+    "Portal BID for the Americas; no se encontro endpoint publico estructurado para extraer filas.",
+    "Extrae documentos EOI/RFI publicados por CEPAL.",
+    "El sitio bloquea scraping automatico con Incapsula desde esta red."
+  )
+)
+
+ALL_SOURCES <- SOURCE_REGISTRY$fuente
+
 empty_licitaciones <- function() {
   tibble::tibble(
     id = character(),
