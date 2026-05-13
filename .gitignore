@@ -1,0 +1,13 @@
+.Rhistory
+.RData
+.Ruserdata
+.Renviron
+rsconnect/
+
+data/*.rds
+data/*.log
+data/*.html
+data/*.js
+
+.DS_Store
+Thumbs.db
