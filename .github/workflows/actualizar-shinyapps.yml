@@ -1,5 +1,8 @@
 name: Actualizar dashboard Shiny
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   schedule:
     # GitHub Actions usa UTC. Se dispara a las 09:00 y 10:00 UTC,
@@ -33,17 +36,24 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: "release"
+          use-public-rspm: true
 
       - name: Instalar dependencias del sistema
         if: steps.chile_time.outputs.run_update == 'true'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libjpeg-dev
 
       - name: Instalar paquetes R
         if: steps.chile_time.outputs.run_update == 'true'
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          cache-version: 1
+
+      - name: Verificar paquetes R
+        if: steps.chile_time.outputs.run_update == 'true'
         run: |
-          Rscript -e "install.packages(c('shiny','bslib','DT','dplyr','lubridate','stringr','httr2','jsonlite','rvest','purrr','echarts4r','tibble','xml2','digest','rsconnect'), repos='https://cloud.r-project.org')"
+          Rscript -e "source('global.R'); cat('Paquetes R OK\n')"
 
       - name: Verificar secrets shinyapps.io
         if: steps.chile_time.outputs.run_update == 'true'

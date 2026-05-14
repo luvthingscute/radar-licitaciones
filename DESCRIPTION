@@ -1,0 +1,21 @@
+Package: licitacionesdashboard
+Title: Monitor de Licitaciones Internacionales
+Version: 0.0.1
+Type: Shiny
+Encoding: UTF-8
+Imports:
+    shiny,
+    bslib,
+    DT,
+    dplyr,
+    lubridate,
+    stringr,
+    httr2,
+    jsonlite,
+    rvest,
+    purrr,
+    echarts4r,
+    tibble,
+    xml2,
+    digest,
+    rsconnect
