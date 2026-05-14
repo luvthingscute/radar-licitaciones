@@ -20,6 +20,19 @@ if (nzchar(Sys.getenv("SHINYAPPS_TOKEN")) && nzchar(Sys.getenv("SHINYAPPS_SECRET
   )
 }
 
+if (!nrow(rsconnect::accounts())) {
+  stop(
+    "No hay cuenta shinyapps.io configurada. Revisa SHINYAPPS_ACCOUNT, ",
+    "SHINYAPPS_TOKEN y SHINYAPPS_SECRET en GitHub Secrets.",
+    call. = FALSE
+  )
+}
+
+message(
+  "Cuenta shinyapps.io activa: ",
+  paste(rsconnect::accounts()$name, collapse = ", ")
+)
+
 app_files <- c(
   "app.R",
   "global.R",
@@ -31,6 +44,8 @@ app_files <- c(
 )
 
 app_files <- app_files[file.exists(app_files)]
+
+message("Archivos incluidos en deploy: ", paste(app_files, collapse = ", "))
 
 rsconnect::deployApp(
   appDir = ".",

@@ -80,6 +80,15 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      - name: Verificar conexion shinyapps.io
+        if: steps.chile_time.outputs.run_update == 'true' && steps.shinyapps_secrets.outputs.configured == 'true'
+        env:
+          SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
+          SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+        run: |
+          Rscript -e "rsconnect::setAccountInfo(name=Sys.getenv('SHINYAPPS_ACCOUNT'), token=Sys.getenv('SHINYAPPS_TOKEN'), secret=Sys.getenv('SHINYAPPS_SECRET')); print(rsconnect::accounts()); apps <- rsconnect::applications(account=Sys.getenv('SHINYAPPS_ACCOUNT')); if (nrow(apps)) print(apps[, c('name','url')]) else message('Cuenta valida, sin aplicaciones listadas.')"
+
       - name: Actualizar cache
         if: steps.chile_time.outputs.run_update == 'true' && steps.shinyapps_secrets.outputs.configured == 'true'
         run: Rscript update_cache.R
