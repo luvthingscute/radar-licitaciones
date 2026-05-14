@@ -67,6 +67,22 @@ body {
   font-weight: 600;
 }
 
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: #475569;
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.table-toolbar .btn {
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
 .kpi-card.green {
   border-left-color: #059669;
 }

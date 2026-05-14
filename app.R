@@ -45,6 +45,11 @@ ui <- bslib::page_sidebar(
       full_screen = TRUE,
       bslib::nav_panel(
         "Explorador",
+        div(
+          class = "table-toolbar",
+          div(textOutput("favoritos_estado")),
+          downloadButton("descargar_favoritos", "Descargar favoritos", class = "btn-primary")
+        ),
         DT::DTOutput("tabla")
       ),
       bslib::nav_panel(
@@ -208,6 +213,7 @@ server <- function(input, output, session) {
       escape = FALSE,
       rownames = FALSE,
       extensions = "Buttons",
+      selection = "multiple",
       options = list(
         dom = "Bfrtip",
         buttons = c("copy", "csv"),
@@ -235,6 +241,36 @@ server <- function(input, output, session) {
       )
     )
   }, server = TRUE)
+
+  favoritos <- reactive({
+    seleccion <- input$tabla_rows_selected
+    df <- filtradas()
+
+    if (is.null(seleccion) || !length(seleccion) || !nrow(df)) {
+      return(df[0, , drop = FALSE])
+    }
+
+    seleccion <- seleccion[seleccion <= nrow(df)]
+    df[seleccion, , drop = FALSE]
+  })
+
+  output$favoritos_estado <- renderText({
+    n <- nrow(favoritos())
+    if (n == 1) {
+      "1 favorito seleccionado"
+    } else {
+      paste(n, "favoritos seleccionados")
+    }
+  })
+
+  output$descargar_favoritos <- downloadHandler(
+    filename = function() {
+      paste0("favoritos_licitaciones_", format(Sys.Date(), "%Y%m%d"), ".csv")
+    },
+    content = function(file) {
+      utils::write.csv(favoritos(), file, row.names = FALSE, na = "", fileEncoding = "UTF-8")
+    }
+  )
 
   output$chart_fuente <- echarts4r::renderEcharts4r({
     filtradas() |> dplyr::count(fuente, name = "n") |> echarts4r::e_charts(fuente) |> echarts4r::e_bar(n) |> echarts4r::e_tooltip()
