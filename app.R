@@ -51,7 +51,6 @@ ui <- bslib::page_sidebar(
           div(
             class = "table-actions",
             downloadButton("descargar_base_csv", "Base CSV", class = "btn-outline-primary"),
-            downloadButton("descargar_base_excel", "Base Excel", class = "btn-outline-primary"),
             downloadButton("descargar_favoritos", "Favoritos CSV", class = "btn-primary")
           )
         ),
@@ -283,15 +282,6 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       utils::write.csv(filtradas(), file, row.names = FALSE, na = "", fileEncoding = "UTF-8")
-    }
-  )
-
-  output$descargar_base_excel <- downloadHandler(
-    filename = function() {
-      paste0("licitaciones_filtradas_", format(Sys.Date(), "%Y%m%d"), ".xlsx")
-    },
-    content = function(file) {
-      writexl::write_xlsx(filtradas(), path = file)
     }
   )
 
