@@ -48,7 +48,12 @@ ui <- bslib::page_sidebar(
         div(
           class = "table-toolbar",
           div(textOutput("favoritos_estado")),
-          downloadButton("descargar_favoritos", "Descargar favoritos", class = "btn-primary")
+          div(
+            class = "table-actions",
+            downloadButton("descargar_base_csv", "Base CSV", class = "btn-outline-primary"),
+            downloadButton("descargar_base_excel", "Base Excel", class = "btn-outline-primary"),
+            downloadButton("descargar_favoritos", "Favoritos CSV", class = "btn-primary")
+          )
         ),
         DT::DTOutput("tabla")
       ),
@@ -269,6 +274,24 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       utils::write.csv(favoritos(), file, row.names = FALSE, na = "", fileEncoding = "UTF-8")
+    }
+  )
+
+  output$descargar_base_csv <- downloadHandler(
+    filename = function() {
+      paste0("licitaciones_filtradas_", format(Sys.Date(), "%Y%m%d"), ".csv")
+    },
+    content = function(file) {
+      utils::write.csv(filtradas(), file, row.names = FALSE, na = "", fileEncoding = "UTF-8")
+    }
+  )
+
+  output$descargar_base_excel <- downloadHandler(
+    filename = function() {
+      paste0("licitaciones_filtradas_", format(Sys.Date(), "%Y%m%d"), ".xlsx")
+    },
+    content = function(file) {
+      writexl::write_xlsx(filtradas(), path = file)
     }
   )
 

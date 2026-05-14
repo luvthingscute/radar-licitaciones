@@ -18,4 +18,5 @@ Imports:
     tibble,
     xml2,
     digest,
+    writexl,
     rsconnect
