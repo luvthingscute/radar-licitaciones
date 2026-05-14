@@ -51,6 +51,9 @@ rsconnect::deployApp(
   appDir = ".",
   appName = "monitor-licitaciones-internacionales",
   appTitle = "Monitor de Licitaciones Internacionales",
+  appId = Sys.getenv("SHINYAPPS_APP_ID", unset = "17355186"),
+  account = Sys.getenv("SHINYAPPS_ACCOUNT", unset = "florenciamunozobon"),
+  server = "shinyapps.io",
   appFiles = app_files,
   forceUpdate = TRUE
 )
