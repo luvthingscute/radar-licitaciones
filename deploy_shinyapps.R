@@ -12,6 +12,14 @@ if (!requireNamespace("rsconnect", quietly = TRUE)) {
 #   secret = "TU_SECRET"
 # )
 
+if (nzchar(Sys.getenv("SHINYAPPS_TOKEN")) && nzchar(Sys.getenv("SHINYAPPS_SECRET"))) {
+  rsconnect::setAccountInfo(
+    name = Sys.getenv("SHINYAPPS_ACCOUNT", unset = "florenciamunozobon"),
+    token = Sys.getenv("SHINYAPPS_TOKEN"),
+    secret = Sys.getenv("SHINYAPPS_SECRET")
+  )
+}
+
 app_files <- c(
   "app.R",
   "global.R",

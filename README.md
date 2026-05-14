@@ -51,6 +51,21 @@ source("deploy_shinyapps.R")
 
 No subas tokens, secrets, `.Renviron`, `rsconnect/`, caches ni logs al repositorio.
 
+## Actualizacion diaria
+
+El repositorio incluye un workflow de GitHub Actions en `.github/workflows/actualizar-shinyapps.yml`.
+Ese flujo actualiza las licitaciones y republica shinyapps.io todos los dias a las 06:00 hora de Chile.
+
+Para activarlo, crea estos secrets en GitHub:
+
+```text
+SHINYAPPS_ACCOUNT
+SHINYAPPS_TOKEN
+SHINYAPPS_SECRET
+```
+
+Tambien se puede ejecutar manualmente desde la pestana `Actions` de GitHub usando `Run workflow`.
+
 ## Mercado Publico
 
 La API de Mercado Publico requiere un ticket. Configuralo antes de ejecutar:

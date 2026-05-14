@@ -1,0 +1,52 @@
+name: Actualizar dashboard Shiny
+
+on:
+  schedule:
+    # GitHub Actions usa UTC. Se dispara a las 09:00 y 10:00 UTC,
+    # pero solo continua cuando en America/Santiago son las 06:00.
+    - cron: "0 9,10 * * *"
+  workflow_dispatch:
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Revisar hora de Chile
+        id: chile_time
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "run_update=true" >> "$GITHUB_OUTPUT"
+          elif [ "$(TZ=America/Santiago date +%H)" = "06" ]; then
+            echo "run_update=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_update=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Descargar repositorio
+        if: steps.chile_time.outputs.run_update == 'true'
+        uses: actions/checkout@v4
+
+      - name: Instalar R
+        if: steps.chile_time.outputs.run_update == 'true'
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "release"
+
+      - name: Instalar paquetes R
+        if: steps.chile_time.outputs.run_update == 'true'
+        run: |
+          Rscript -e "install.packages(c('shiny','bslib','DT','dplyr','lubridate','stringr','httr2','jsonlite','rvest','purrr','echarts4r','tibble','xml2','digest','rsconnect'), repos='https://cloud.r-project.org')"
+
+      - name: Actualizar cache
+        if: steps.chile_time.outputs.run_update == 'true'
+        run: Rscript update_cache.R
+
+      - name: Publicar en shinyapps.io
+        if: steps.chile_time.outputs.run_update == 'true'
+        env:
+          SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
+          SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+        run: Rscript deploy_shinyapps.R

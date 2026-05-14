@@ -179,6 +179,7 @@ server <- function(input, output, session) {
         titulo,
         organismo,
         pais,
+        fecha_publicacion,
         fecha_cierre,
         monto = dplyr::if_else(
           is.na(monto),
